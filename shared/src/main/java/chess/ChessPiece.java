@@ -1,8 +1,8 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
+
+import static chess.ChessPiece.PieceType.BISHOP;
 
 /**
  * Represents a single chess piece
@@ -16,7 +16,7 @@ public class ChessPiece {
     private final PieceType type;
 
 public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
-        this.color = color;
+        this.color = pieceColor;
         this.type = type;
     }
 
@@ -54,28 +54,39 @@ public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
      * @return Collection of valid moves
      */
 
-    public class Rules {
+    public abstract class Rules implements MovementRule{
         static private final HashMap<PieceType, MovementRule> rules = new HashMap<>();
 
-        static {
-            rules.put(KING, new KingMovementRule());
-            rules.put(QUEEN, new QueenMovementRule());
-            rules.put(KNIGHT, new KnightMovementRule());
-            rules.put(BISHOP, new BishopMovementRule());
-            rules.put(ROOK, new RookMovementRule());
-            rules.put(PAWN, new PawnMovementRule());
+        {
+            //rules.put(PieceType.KING, new KingMovementRule());
+            //rules.put(PieceType.QUEEN, new QueenMovementRule());
+            rules.put(PieceType.KNIGHT, new KnightMovementRule());
+            rules.put(PieceType.BISHOP, new BishopMovementRule());
+            rules.put(PieceType.ROOK, new RookMovementRule());
+            //rules.put(PieceType.PAWN, new PawnMovementRule());
         }
 
         static public MovementRule pieceRule(PieceType type) {
             return rules.get(type);
+        }
+
+    }
+
+
+
+    public abstract class BaseMovementRule implements MovementRule {
+        protected void calculateMoves(ChessBoard board, ChessPosition pos, int rowInc, int colInc,
+                                      Collection<ChessMove> moves, boolean allowDistance){
+
         }
     }
 
     public interface MovementRule {
         Collection<ChessMove> moves(ChessBoard board, ChessPosition pos);
 
-        MovementRule rule = Rules.pieceRule(this.type);
-
+        //MovementRule rule = Rules.pieceRule(this.type);
+    }
+        /*
         Rule rule = switch (getPieceType()) {
             case BISHOP -> new Rule(true, new int[][]{{1, -1}, {-1, 1}, {-1, -1}, {1, 1}});
             case ROOK   -> new Rule(true, new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}});
@@ -86,7 +97,7 @@ public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         };
 
         return rule.getMoves(board, myPosition);
-    }
+    }*/
 
     public class BishopMovementRule extends BaseMovementRule {
         @Override
@@ -96,6 +107,30 @@ public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
             calculateMoves(board, position, 1, -1, moves, true);
             calculateMoves(board, position, -1, 1, moves, true);
             calculateMoves(board, position, 1, 1, moves, true);
+            return moves;
+        }
+    }
+
+    public class RookMovementRule extends BaseMovementRule {
+        @Override
+        public Collection<ChessMove> moves(ChessBoard board, ChessPosition position) {
+            var moves = new HashSet<ChessMove>();
+            calculateMoves(board, position, -1, 0, moves, true);
+            calculateMoves(board, position, 1, 0, moves, true);
+            calculateMoves(board, position, 0, -1, moves, true);
+            calculateMoves(board, position, 0, 1, moves, true);
+            return moves;
+        }
+    }
+
+    public class KnightMovementRule extends BaseMovementRule {
+        @Override
+        public Collection<ChessMove> moves(ChessBoard board, ChessPosition position) {
+            var moves = new HashSet<ChessMove>();
+            calculateMoves(board, position, 1, -2, moves, true);
+            calculateMoves(board, position, -1, -2, moves, true);
+            calculateMoves(board, position, 1, 2, moves, true);
+            calculateMoves(board, position, -1, 2, moves, true);
             return moves;
         }
     }
