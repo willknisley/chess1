@@ -2,8 +2,6 @@ package chess;
 
 import java.util.*;
 
-import static chess.ChessPiece.PieceType.BISHOP;
-
 /**
  * Represents a single chess piece
  * <p>
@@ -18,13 +16,19 @@ public class ChessPiece {
 public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.color = pieceColor;
         this.type = type;
+}
+//maybe
+    public Set<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
+        MovementRule rule = Rules.pieceRule(this.type);
+        return rule != null ? new HashSet<>(rule.pieceMoves(board, position)) : new HashSet<>();
     }
+
 
     /**
      * The various different chess piece options
      */
     public enum PieceType {
-        KING,
+       KING,
         QUEEN,
         BISHOP,
         KNIGHT,
@@ -54,7 +58,8 @@ public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
      * @return Collection of valid moves
      */
 
-    public abstract class Rules implements MovementRule{
+// map or hashmap
+    public abstract class Rules extends MovementRule {
         static private final HashMap<PieceType, MovementRule> rules = new HashMap<>();
 
         {
@@ -74,18 +79,22 @@ public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
 
 
 
-    public abstract class BaseMovementRule implements MovementRule {
+    public abstract class BaseMovementRule extends MovementRule {
         protected void calculateMoves(ChessBoard board, ChessPosition pos, int rowInc, int colInc,
-                                      Collection<ChessMove> moves, boolean allowDistance){
+                                      Collection<ChessMove> pieceMoves, boolean allowDistance) {
 
+        }
+        //@Override maybe
+        public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
+            return List.of();
         }
     }
 
-    public interface MovementRule {
-        Collection<ChessMove> moves(ChessBoard board, ChessPosition pos);
+    //public interface MovementRule {
+        //Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos);
 
         //MovementRule rule = Rules.pieceRule(this.type);
-    }
+    //}
         /*
         Rule rule = switch (getPieceType()) {
             case BISHOP -> new Rule(true, new int[][]{{1, -1}, {-1, 1}, {-1, -1}, {1, 1}});
@@ -101,7 +110,7 @@ public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
 
     public class BishopMovementRule extends BaseMovementRule {
         @Override
-        public Collection<ChessMove> moves(ChessBoard board, ChessPosition position) {
+        public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
             var moves = new HashSet<ChessMove>();
             calculateMoves(board, position, -1, -1, moves, true);
             calculateMoves(board, position, 1, -1, moves, true);
@@ -113,7 +122,7 @@ public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
 
     public class RookMovementRule extends BaseMovementRule {
         @Override
-        public Collection<ChessMove> moves(ChessBoard board, ChessPosition position) {
+        public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
             var moves = new HashSet<ChessMove>();
             calculateMoves(board, position, -1, 0, moves, true);
             calculateMoves(board, position, 1, 0, moves, true);
@@ -125,7 +134,7 @@ public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
 
     public class KnightMovementRule extends BaseMovementRule {
         @Override
-        public Collection<ChessMove> moves(ChessBoard board, ChessPosition position) {
+        public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
             var moves = new HashSet<ChessMove>();
             calculateMoves(board, position, 1, -2, moves, true);
             calculateMoves(board, position, -1, -2, moves, true);
@@ -146,6 +155,14 @@ public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
     @Override
     public int hashCode() {
         return Objects.hash(color, type);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "color=" + color +
+                ", type=" + type +
+                '}';
     }
 }
 

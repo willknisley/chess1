@@ -3,6 +3,8 @@ package chess;
 import java.util.Arrays;
 import java.util.Objects;
 
+//import static chess.ChessPiece.PieceType.ROOK;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -10,7 +12,7 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares = new ChessPiece[9][9];
     public ChessBoard() {
         
     }
@@ -40,8 +42,27 @@ public class ChessBoard {
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
+
+
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        new ChessBoard();
+        ChessPiece.PieceType[] pieces = {
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.ROOK
+        };
+
+        for (int i = 0; i < pieces.length; i++){
+            addPiece(new ChessPosition(1, i + 1), new ChessPiece(ChessGame.TeamColor.WHITE, pieces[i]));
+            addPiece(new ChessPosition(2, i + 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+            addPiece(new ChessPosition(8, i + 1), new ChessPiece(ChessGame.TeamColor.BLACK, pieces[i]));
+            addPiece(new ChessPosition(7, i + 1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        }
     }
 
     @Override
@@ -55,5 +76,12 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(squares);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "squares=" + Arrays.toString(squares) +
+                '}';
     }
 }
